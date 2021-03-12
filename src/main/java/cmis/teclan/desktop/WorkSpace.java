@@ -132,6 +132,8 @@ public class WorkSpace {
                             LOG.append(String.format("文件扩展名不符合规则：%s\n",filePath));
                         }
                     }
+                    LOG.append("刷新目录："+loaclFilePath+"\n");
+                    FileUtils.flusFileListByPath(localTable,loaclFilePath);
                     LOG.append(String.format("合并完成，输出文件：%s\n",merge.getAbsolutePath()));
                 }catch (Exception e){
                     DialogUtils.showError(e.getMessage());
