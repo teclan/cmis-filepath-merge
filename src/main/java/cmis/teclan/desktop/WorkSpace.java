@@ -1,10 +1,7 @@
 package cmis.teclan.desktop;
 
 import cmis.teclan.constant.Constant;
-import cmis.teclan.utils.Assert;
-import cmis.teclan.utils.DialogUtils;
-import cmis.teclan.utils.FileUtils;
-import cmis.teclan.utils.MoveLabel;
+import cmis.teclan.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -116,22 +113,28 @@ public class WorkSpace {
                     merge.delete();
                     LOG.append(String.format("合并前删除文件：%s\n",merge.getAbsolutePath()));
 
+                    FileLineHandler fileLineHandler = new DefaultFileLineHandler();
+                    fileLineHandler.clean();
+
                     for(String filePath:filePaths){
                         File file = new File(filePath);
                         String suffix = filePath.substring(filePath.lastIndexOf(".")+1);
                         if(SUFFIX.contains(suffix.toLowerCase())){
                             String content = FileUtils.getContent(file);
-
                             if(Assert.assertNullString(content)){
                                 LOG.append(String.format("文件内容为空：%s\n",filePath));
+                                continue;
                             }else {
-                                FileUtils.randomWrite2File(merge.getAbsolutePath(),content);
+                                FileUtils.getContent(file,fileLineHandler);
                             }
 
                         }else {
                             LOG.append(String.format("文件扩展名不符合规则：%s\n",filePath));
                         }
                     }
+
+                     FileUtils.randomWrite2File(merge.getAbsolutePath(),fileLineHandler.get());
+
                     LOG.append("刷新目录："+loaclFilePath+"\n");
                     FileUtils.flusFileListByPath(localTable,loaclFilePath);
                     LOG.append(String.format("合并完成，输出文件：%s\n",merge.getAbsolutePath()));

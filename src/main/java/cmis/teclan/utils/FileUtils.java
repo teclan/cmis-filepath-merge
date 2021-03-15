@@ -286,6 +286,28 @@ public class FileUtils {
         return content.toString();
     }
 
+    public static void getContent(File file,FileLineHandler handler) {
+        try {
+            if (file.isFile() && file.exists()) { // 判断文件是否存在
+                InputStreamReader read = new InputStreamReader(
+                        new FileInputStream(file));// 考虑到编码格式
+                BufferedReader bufferedReader = new BufferedReader(read);
+                String line = null;
+                int index=0;
+                while ((line = bufferedReader.readLine()) != null) {
+//                    content.append(line).append("\r\n");
+                    handler.handle(++index,line);
+                }
+                read.close();
+            } else {
+                throw new Exception("找不到指定的文件:{}"+ file.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            return  ;
+        }
+    }
+
     public static void randomWrite2File(String fileName, String content) {
         RandomAccessFile randomFile = null;
         try {
