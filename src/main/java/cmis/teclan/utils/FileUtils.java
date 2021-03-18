@@ -2,6 +2,8 @@ package cmis.teclan.utils;
 
 
 import cmis.teclan.desktop.WorkSpace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,6 +15,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class FileUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
     private static final DecimalFormat DF = new DecimalFormat("######0.00");
 
     public static File[] getFileList(String filePath) {
@@ -91,8 +94,10 @@ public class FileUtils {
                                 flusFileListByPath(table,local);
                                 WorkSpace.JT_LOCAL_FILE_PATH.setText(afterFormatFilePath(local));
                                 WorkSpace.LOG.append("打开目录："+afterFormatFilePath(local)+"\n");
+                                LOGGER.info("{}","打开目录："+afterFormatFilePath(local)+"\n");
                             }else {
                                 WorkSpace.LOG.append("浏览文件："+afterFormatFilePath(local)+"\n");
+                                LOGGER.info("{}","浏览文件："+afterFormatFilePath(local)+"\n");
                                 open(file);
                             }
                         }
@@ -280,7 +285,7 @@ public class FileUtils {
                 throw new Exception("找不到指定的文件:{}"+ file.getAbsolutePath());
             }
         } catch (Exception e) {
-            e.fillInStackTrace();
+            LOGGER.error(e.getMessage(),e);
             return null;
         }
         return content.toString();
@@ -303,7 +308,7 @@ public class FileUtils {
                 throw new Exception("找不到指定的文件:{}"+ file.getAbsolutePath());
             }
         } catch (Exception e) {
-            e.fillInStackTrace();
+            LOGGER.error(e.getMessage(),e);
             return  ;
         }
     }
@@ -315,16 +320,17 @@ public class FileUtils {
             randomFile = new RandomAccessFile(fileName, "rw");
             long fileLength = randomFile.length();
             randomFile.seek(fileLength);
-            randomFile.writeBytes(content);
+//            randomFile.writeBytes(content);
+            randomFile.write(content.getBytes("UTF-8"));
         } catch (IOException e) {
-            e.fillInStackTrace();
+            LOGGER.error(e.getMessage(),e);
         } finally {
             try {
                 if (randomFile != null) {
                     randomFile.close();
                 }
             } catch (IOException e) {
-              e.fillInStackTrace();
+                LOGGER.error(e.getMessage(),e);
             }
         }
     }
@@ -336,7 +342,7 @@ public class FileUtils {
             }
             new File(fileName).createNewFile();
         } catch (IOException e) {
-            e.fillInStackTrace();
+            LOGGER.error(e.getMessage(),e);
         }
     }
 }
